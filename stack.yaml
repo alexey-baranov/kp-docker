@@ -1,0 +1,46 @@
+# https://hub.docker.com/_/postgres/
+
+# поднимает стек приложений
+# 1. СУБД с тремя базами: kopnik, dev, test
+# 2. почтовый сервер
+
+# docker stack deploy -c stack.yaml kopnik
+# docker stack rm kopnik
+
+version: '3.1'
+
+services:
+  db:
+    image: alexey2baranov/db
+    restart: always
+#    разобраться почему user не работает
+#    user: 1000:1000
+    environment:
+      # переменная окружения контенера становится паролем суперпользователя
+      POSTGRES_PASSWORD: postgres
+      # по умолчанию суперпользователь postgres
+      # POSTGRES_USER: postgres
+    volumes:
+      - ./db/postgres.conf:/etc/postgresql/postgresql.conf
+      - ./db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8090:8080
+
+#  visualizer:
+#    image: dockersamples/visualizer:stable
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  frontend:
+  backend:
